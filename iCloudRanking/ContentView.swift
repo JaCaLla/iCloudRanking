@@ -1,24 +1,49 @@
 //
 //  ContentView.swift
-//  iCloudRanking
+//  CloudKitRanking
 //
-//  Created by JAVIER CALATRAVA LLAVERIA on 24/4/25.
+//  Created by JAVIER CALATRAVA LLAVERIA on 23/4/25.
 //
 
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+    @StateObject private var ckManager = CloudKitManager()
+    @State private var playerName = ""
+    @State private var playerPoints = ""
 
-#Preview {
-    ContentView()
+    var body: some View {
+        NavigationView {
+            VStack {
+                HStack {
+                    TextField("Name", text: $playerName)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    TextField("Points", text: $playerPoints)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .keyboardType(.numberPad)
+                    Button("Add") {
+                        if let points = Int(playerPoints) {
+                                ckManager.addScore(name: playerName, points: points)
+                                playerName = ""
+                                playerPoints = ""
+                                //ckManager.fetchScores()
+                        }
+                    }
+                }
+                .padding()
+
+                List(ckManager.scores) { score in
+                    HStack {
+                        Text(score.name)
+                        Spacer()
+                        Text("\(score.points)")
+                    }
+                }
+            }
+            .navigationTitle("iCloudRanking")
+//            .onAppear {
+//                ckManager.fetchScores()
+//            }
+        }
+    }
 }
